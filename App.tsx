@@ -6,40 +6,36 @@
  */
 
 import { NewAppScreen } from '@react-native/new-app-screen';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
+import MainScreen from './src/presentation/features/main/MainScreen';
+import CardScreen from './src/presentation/features/card/CardScreen';
+
+
+
+export type RootStackParamList = {
+  MainScreen: undefined;
+  CardScreen: { countryName: string };
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>(); 
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='MainScreen'>
+        <Stack.Screen name="MainScreen" component={MainScreen} />
+        <Stack.Screen name="CardScreen" component={CardScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;

@@ -1,0 +1,236 @@
+import React from "react";
+import {
+    ActivityIndicator,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
+import useCard from "./hooks/useCard";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../../../App";
+
+type Props = NativeStackScreenProps<RootStackParamList, "CardScreen">;
+
+export default function CardScreen({ route }: Props) {
+    const name: string = route.params.countryName;
+
+    console.log(name);
+    const { loading, error, country } = useCard(name);
+
+    
+
+    if (loading) {
+        return (
+            <View style={styles.centeredState}>
+                <ActivityIndicator size="large" color="#2563EB" />
+                <Text style={styles.stateText}>Loading country...</Text>
+            </View>
+        );
+    }
+
+    if (error) {
+        return (
+            <View style={styles.centeredState}>
+                <Text style={styles.errorTitle}>Unable to load country</Text>
+                <Text style={styles.errorMessage}>{error}</Text>
+            </View>
+        );
+    }
+
+    if (!country) {
+        return (
+            <View style={styles.centeredState}>
+                <Text style={styles.errorTitle}>Country not found</Text>
+                <Text style={styles.errorMessage}>
+                    No data is available for this country.
+                </Text>
+            </View>
+        );
+    }
+
+    return (
+        <ScrollView
+            style={styles.screen}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+        >
+            <View style={styles.heroCard}>
+                <Text style={styles.flag}>{country.flagEmoji}</Text>
+                <Text style={styles.title}>{country.commonName}</Text>
+                <Text style={styles.subtitle}>{country.officialName}</Text>
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>General</Text>
+
+                <InfoRow label="CCA2" value={country.cca2} />
+                <InfoRow label="CCA3" value={country.cca3} />
+                <InfoRow
+                    label="Capital"
+                    value={country.capital?.length ? country.capital.join(", ") : "—"}
+                />
+                <InfoRow label="Region" value={country.region || "—"} />
+                <InfoRow label="Subregion" value={country.subregion || "—"} />
+                <InfoRow
+                    label="Population"
+                    value={country.population?.toLocaleString() || "—"}
+                />
+                <InfoRow
+                    label="Area"
+                    value={country.area ? `${country.area.toLocaleString()} km²` : "—"}
+                />
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Location</Text>
+
+                <InfoRow label="Latitude" value={String(country.lat ?? "—")} />
+                <InfoRow label="Longitude" value={String(country.lng ?? "—")} />
+                <InfoRow
+                    label="Timezones"
+                    value={
+                        country.timezones?.length
+                            ? country.timezones.join(", ")
+                            : "—"
+                    }
+                />
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Culture</Text>
+
+                <InfoRow
+                    label="Languages"
+                    value={
+                        country.languages?.length
+                            ? country.languages.join(", ")
+                            : "—"
+                    }
+                />
+                <InfoRow
+                    label="Currency code"
+                    value={country.currencyCode || "—"}
+                />
+                <InfoRow
+                    label="Currency"
+                    value={country.currencyName || "—"}
+                />
+                <InfoRow
+                    label="Symbol"
+                    value={country.currencySymbol || "—"}
+                />
+            </View>
+        </ScrollView>
+    );
+}
+
+type InfoRowProps = {
+    label: string;
+    value: string;
+};
+
+function InfoRow({ label, value }: InfoRowProps) {
+    return (
+        <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>{label}</Text>
+            <Text style={styles.infoValue}>{value}</Text>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    screen: {
+        flex: 1,
+        backgroundColor: "#F3F4F6",
+    },
+    content: {
+        padding: 16,
+        paddingBottom: 32,
+    },
+    centeredState: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        paddingHorizontal: 24,
+        backgroundColor: "#F3F4F6",
+    },
+    stateText: {
+        marginTop: 12,
+        fontSize: 16,
+        color: "#4B5563",
+    },
+    errorTitle: {
+        fontSize: 18,
+        fontWeight: "700",
+        color: "#B91C1C",
+        marginBottom: 8,
+        textAlign: "center",
+    },
+    errorMessage: {
+        fontSize: 14,
+        color: "#6B7280",
+        textAlign: "center",
+    },
+    heroCard: {
+        backgroundColor: "#FFFFFF",
+        borderRadius: 20,
+        padding: 24,
+        alignItems: "center",
+        marginBottom: 16,
+        shadowColor: "#000000",
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.08,
+        shadowRadius: 10,
+        elevation: 4,
+    },
+    flag: {
+        fontSize: 56,
+        marginBottom: 12,
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: "800",
+        color: "#111827",
+        textAlign: "center",
+    },
+    subtitle: {
+        marginTop: 8,
+        fontSize: 15,
+        color: "#6B7280",
+        textAlign: "center",
+    },
+    section: {
+        backgroundColor: "#FFFFFF",
+        borderRadius: 18,
+        padding: 16,
+        marginBottom: 16,
+        shadowColor: "#000000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 2,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: "700",
+        color: "#1F2937",
+        marginBottom: 14,
+    },
+    infoRow: {
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: "#E5E7EB",
+    },
+    infoLabel: {
+        fontSize: 13,
+        fontWeight: "600",
+        color: "#6B7280",
+        marginBottom: 4,
+    },
+    infoValue: {
+        fontSize: 16,
+        color: "#111827",
+        fontWeight: "500",
+    },
+});

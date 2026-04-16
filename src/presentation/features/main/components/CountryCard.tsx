@@ -1,14 +1,19 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Country } from "../../../../domain/entities/Country";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../../../../App";
+import { useNavigation } from "@react-navigation/native";
 
 type CountryCardProps = {
-    item: Country;
+    item: Country,
+    onPress: () => void
 };
 
-const CountryCard = ({ item }: CountryCardProps) => {
+
+const CountryCard = ({ item, onPress}: CountryCardProps) => {
     return (
-        <View style={styles.card}>
+        <TouchableOpacity style={styles.card} onPress={onPress}>
             <Text style={styles.title}>{item.commonName}</Text>
             <Text style={styles.subtitle}>{item.officialName}</Text>
 
@@ -19,7 +24,7 @@ const CountryCard = ({ item }: CountryCardProps) => {
             <Text style={styles.population}>
                 Population: {item.population.toLocaleString()}
             </Text>
-        </View>
+        </TouchableOpacity>
     );
 };
 

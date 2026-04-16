@@ -8,8 +8,12 @@ import {
 } from "react-native";
 import CountryCard from "./components/CountryCard";
 import { useCountries } from "./hooks/useCountries";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../../../App";
 
-export default function MainScreen() {
+type Props = NativeStackScreenProps<RootStackParamList, 'MainScreen'>;
+
+export default function MainScreen({navigation}: Props) {
     const { countries, loading, error } = useCountries();
 
     if (loading) {
@@ -30,11 +34,14 @@ export default function MainScreen() {
         );
     }
 
+
     return (
         <View style={styles.screen}>
             <FlatList
                 data={countries}
-                renderItem={({ item }) => <CountryCard item={item} />}
+                renderItem={({ item }) => <CountryCard item={item} onPress={() => {
+                    navigation.navigate("CardScreen", {countryName: item.commonName.toLowerCase()})
+                }}/>}
                 keyExtractor={(item) => item.officialName}
                 initialNumToRender={12}
                 maxToRenderPerBatch={10}
