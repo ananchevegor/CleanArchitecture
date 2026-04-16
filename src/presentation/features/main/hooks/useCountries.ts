@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Country } from "../../../../domain/entities/Country";
 import { loadCountries } from "../main";
+import { Country } from "@entities/Country";
 
 type UseCountriesResult = {
     countries: Country[];
@@ -22,6 +22,7 @@ export function useCountries(): UseCountriesResult {
                 setError(null);
 
                 const data = await loadCountries();
+
 
                 if (isMounted) {
                     setCountries(data);

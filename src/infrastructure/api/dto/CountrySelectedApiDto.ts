@@ -27,3 +27,6 @@ export type CountrySelectedApiDto = {
         }
     >;
 };
+
+
+export type CountrySelectedResposeApiDto = CountrySelectedApiDto[];

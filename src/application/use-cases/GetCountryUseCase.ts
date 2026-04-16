@@ -1,5 +1,7 @@
-import { Country } from "../../domain/entities/Country";
-import { CountryRepository } from "../../domain/repositories/CountryRepository";
+
+import { Country } from "@entities/Country";
+import { CountryRepository } from "@repositories/CountryRepository";
+
 
 export class GetCountryUseCase {
     constructor(private readonly countryRepository: CountryRepository) {}

@@ -1,5 +1,5 @@
-import { Country } from "../../../domain/entities/Country";
-import { CountryApiDto } from "../dto/CountryApiDto";
+import { Country } from "@entities/Country";
+import { CountryApiDto } from "../dto";
 
 export class CountryApiMapper {
     static toDomain(dto: CountryApiDto): Country {

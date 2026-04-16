@@ -14,11 +14,9 @@ type Props = NativeStackScreenProps<RootStackParamList, "CardScreen">;
 
 export default function CardScreen({ route }: Props) {
     const name: string = route.params.countryName;
-
-    console.log(name);
     const { loading, error, country } = useCard(name);
 
-    
+    const selectedCountry = country?.[0] ?? null;
 
     if (loading) {
         return (
@@ -38,7 +36,7 @@ export default function CardScreen({ route }: Props) {
         );
     }
 
-    if (!country) {
+    if (!selectedCountry) {
         return (
             <View style={styles.centeredState}>
                 <Text style={styles.errorTitle}>Country not found</Text>
@@ -56,42 +54,68 @@ export default function CardScreen({ route }: Props) {
             showsVerticalScrollIndicator={false}
         >
             <View style={styles.heroCard}>
-                <Text style={styles.flag}>{country.flagEmoji}</Text>
-                <Text style={styles.title}>{country.commonName}</Text>
-                <Text style={styles.subtitle}>{country.officialName}</Text>
+                <Text style={styles.flag}>{selectedCountry.flagEmoji || "🏳️"}</Text>
+                <Text style={styles.title}>{selectedCountry.commonName || "—"}</Text>
+                <Text style={styles.subtitle}>
+                    {selectedCountry.officialName || "—"}
+                </Text>
             </View>
 
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>General</Text>
 
-                <InfoRow label="CCA2" value={country.cca2} />
-                <InfoRow label="CCA3" value={country.cca3} />
+                <InfoRow label="CCA2" value={selectedCountry.cca2 || "—"} />
+                <InfoRow label="CCA3" value={selectedCountry.cca3 || "—"} />
                 <InfoRow
                     label="Capital"
-                    value={country.capital?.length ? country.capital.join(", ") : "—"}
+                    value={
+                        selectedCountry.capital?.length
+                            ? selectedCountry.capital.join(", ")
+                            : "—"
+                    }
                 />
-                <InfoRow label="Region" value={country.region || "—"} />
-                <InfoRow label="Subregion" value={country.subregion || "—"} />
+                <InfoRow label="Region" value={selectedCountry.region || "—"} />
+                <InfoRow label="Subregion" value={selectedCountry.subregion || "—"} />
                 <InfoRow
                     label="Population"
-                    value={country.population?.toLocaleString() || "—"}
+                    value={selectedCountry.population != null
+                        ? selectedCountry.population.toLocaleString()
+                        : "—"}
                 />
                 <InfoRow
                     label="Area"
-                    value={country.area ? `${country.area.toLocaleString()} km²` : "—"}
+                    value={
+                        selectedCountry.area != null
+                            ? `${selectedCountry.area.toLocaleString()} km²`
+                            : "—"
+                    }
                 />
             </View>
 
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Location</Text>
 
-                <InfoRow label="Latitude" value={String(country.lat ?? "—")} />
-                <InfoRow label="Longitude" value={String(country.lng ?? "—")} />
+                <InfoRow
+                    label="Latitude"
+                    value={
+                        selectedCountry.lat != null
+                            ? String(selectedCountry.lat)
+                            : "—"
+                    }
+                />
+                <InfoRow
+                    label="Longitude"
+                    value={
+                        selectedCountry.lng != null
+                            ? String(selectedCountry.lng)
+                            : "—"
+                    }
+                />
                 <InfoRow
                     label="Timezones"
                     value={
-                        country.timezones?.length
-                            ? country.timezones.join(", ")
+                        selectedCountry.timezones?.length
+                            ? selectedCountry.timezones.join(", ")
                             : "—"
                     }
                 />
@@ -103,22 +127,22 @@ export default function CardScreen({ route }: Props) {
                 <InfoRow
                     label="Languages"
                     value={
-                        country.languages?.length
-                            ? country.languages.join(", ")
+                        selectedCountry.languages?.length
+                            ? selectedCountry.languages.join(", ")
                             : "—"
                     }
                 />
                 <InfoRow
                     label="Currency code"
-                    value={country.currencyCode || "—"}
+                    value={selectedCountry.currencyCode || "—"}
                 />
                 <InfoRow
                     label="Currency"
-                    value={country.currencyName || "—"}
+                    value={selectedCountry.currencyName || "—"}
                 />
                 <InfoRow
                     label="Symbol"
-                    value={country.currencySymbol || "—"}
+                    value={selectedCountry.currencySymbol || "—"}
                 />
             </View>
         </ScrollView>

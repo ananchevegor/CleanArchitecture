@@ -1,9 +1,12 @@
-import { Country } from "../../domain/entities/Country";
-import { CountrySelected } from "../../domain/entities/CountrySelected";
-import { CountryRepository } from "../../domain/repositories/CountryRepository";
-import { CountryApiClient } from "../api/CountryApiClient";
-import { CountryApiMapper } from "../api/mappers/CountryApiMapper";
-import { CountrySelectedMapper } from "../api/mappers/CountrySelectedApiMapper";
+
+import { Country } from "@entities/Country";
+import { CountrySelected } from "@entities/CountrySelected";
+import { CountryApiClient } from "@infrastructure/api/CountryApiClient";
+import { CountryApiMapper } from "@infrastructure/api/mappers/CountryApiMapper";
+import { CountrySelectedMapper } from "@infrastructure/api/mappers/CountrySelectedApiMapper";
+import { CountryRepository } from "@repositories/CountryRepository";
+
+
 
 export class CountryRepositoryImpl implements CountryRepository {
     constructor(private readonly countryApiClient: CountryApiClient) {}
@@ -14,8 +17,9 @@ export class CountryRepositoryImpl implements CountryRepository {
         return response.map(CountryApiMapper.toDomain);
     }
 
-    async getCountryByName(name: string): Promise<CountrySelected> {
+    async getCountryByName(name: string): Promise<CountrySelected[]> {
         const response = await this.countryApiClient.getByName(name);
-        return CountrySelectedMapper.toDomain(response)
+        console.log(response);
+        return response.map(CountrySelectedMapper.toDomain);
     }
 }

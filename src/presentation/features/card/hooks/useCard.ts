@@ -1,18 +1,18 @@
-import { Country } from "../../../../domain/entities/Country";
 import React, { useEffect } from "react";
 import { loadCountryByName } from "../card";
-import { CountrySelected } from "../../../../domain/entities/CountrySelected";
+import { CountrySelected } from "@entities/CountrySelected";
+
 
 type CountryCard = {
     loading: boolean;
     error: string | null;
-    country: CountrySelected | null;
+    country: CountrySelected[] | null;
 };
 
 export default function useCard(c: string): CountryCard {
     const [loading, setLoading] = React.useState<boolean>(false);
     const [error, setError] = React.useState<string | null>(null);
-    const [country, setCountry] = React.useState<CountrySelected | null>(null);
+    const [country, setCountry] = React.useState<CountrySelected[] | null>(null);
 
     useEffect(() => {
         let isMounted = true;

@@ -1,7 +1,8 @@
-import { GetCountryUseCase } from "../../application/use-cases/GetCountryUseCase";
-import { CountryApiClient } from "../../infrastructure/api/CountryApiClient";
-import { ApiClient } from "../../infrastructure/http/ApiClient";
-import { CountryRepositoryImpl } from "../../infrastructure/repositories/CountryRepositoryImpl";
+
+import { CountryApiClient } from "@infrastructure/api/CountryApiClient";
+import { ApiClient } from "@infrastructure/http/ApiClient";
+import { CountryRepositoryImpl } from "@infrastructure/repositories/CountryRepositoryImpl";
+import { GetCountryUseCase } from "@use-cases/GetCountryUseCase";
 
 const REST_COUNTRIES_BASE_URL = "https://restcountries.com/v3.1";
 

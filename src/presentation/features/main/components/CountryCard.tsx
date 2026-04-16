@@ -1,9 +1,7 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Country } from "../../../../domain/entities/Country";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../../../../App";
-import { useNavigation } from "@react-navigation/native";
+
 
 type CountryCardProps = {
     item: Country,

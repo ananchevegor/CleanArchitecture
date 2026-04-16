@@ -1,5 +1,7 @@
-import { createMainDependencies } from "../../../composition/main/createMainDependencies";
-import { Country } from "../../../domain/entities/Country";
+import { createMainDependencies } from "@composition/main/createMainDependencies";
+import { Country } from "@entities/Country";
+
+
 
 export async function loadCountries(): Promise<Country[]> {
     const { getCountryUseCase } = createMainDependencies();

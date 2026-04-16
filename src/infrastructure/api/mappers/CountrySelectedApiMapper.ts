@@ -1,6 +1,8 @@
 
-import { CountrySelected } from "../../../domain/entities/CountrySelected";
-import { CountrySelectedApiDto } from "../dto/CountrySelectedApiDto";
+
+import { CountrySelected } from "@entities/CountrySelected";
+import { CountrySelectedApiDto } from "../dto";
+
 
 export class CountrySelectedMapper {
     static toDomain(dto: CountrySelectedApiDto): CountrySelected {
