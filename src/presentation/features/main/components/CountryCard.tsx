@@ -1,17 +1,18 @@
-import React from "react";
+import React, { memo } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Country } from "../../../../domain/entities/Country";
 
 
 type CountryCardProps = {
     item: Country,
-    onPress: () => void
+    onPress: (countryName: string) => void
 };
 
 
-const CountryCard = ({ item, onPress}: CountryCardProps) => {
+const CountryCard = React.memo(({ item, onPress}: CountryCardProps) => {
+    console.log(`Rendering card for`);
     return (
-        <TouchableOpacity style={styles.card} onPress={onPress}>
+        <TouchableOpacity style={styles.card} onPress={() => onPress(item.commonName)}>
             <Text style={styles.title}>{item.commonName}</Text>
             <Text style={styles.subtitle}>{item.officialName}</Text>
 
@@ -24,7 +25,7 @@ const CountryCard = ({ item, onPress}: CountryCardProps) => {
             </Text>
         </TouchableOpacity>
     );
-};
+});
 
 const styles = StyleSheet.create({
     card: {

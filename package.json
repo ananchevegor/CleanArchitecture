@@ -9,6 +9,19 @@
     "start": "react-native start",
     "test": "jest"
   },
+  "codegenConfig": {
+    "name": "AppSpecs",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "android": {
+      "javaPackageName": "com.cleanarchitecture.specs"
+    },
+    "ios": {
+        "modulesProvider": {
+          "NativeModule":  "NativeModuleProvider"
+        }
+     }
+  },
   "dependencies": {
     "@react-native/new-app-screen": "0.85.1",
     "@react-navigation/elements": "^2.9.14",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
     ActivityIndicator,
     FlatList,
@@ -10,12 +10,31 @@ import CountryCard from "./components/CountryCard";
 import { useCountries } from "./hooks/useCountries";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
+import { Country } from "@entities/Country";
+import NativeModule from "../../../../specs/NativeModule";
+
+
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MainScreen'>;
 
 export default function MainScreen({navigation}: Props) {
     const { countries, loading, error } = useCountries();
+
+    const totalPopulation = NativeModule.summuryPopulation(countries.map(c => c.population));
+    
+    
+    
+    const handlePress = useCallback((countryName: string) => {
+        navigation.navigate("CardScreen", {countryName: countryName.toLowerCase()})
+    }, [navigation]);
+
+    const renderItem = useCallback(
+        ({ item }: { item: Country }) => (
+            <CountryCard item={item} onPress={handlePress} />
+        ),
+        [handlePress]
+    );
 
     if (loading) {
         return (
@@ -35,22 +54,28 @@ export default function MainScreen({navigation}: Props) {
         );
     }
 
+    
 
     return (
         <View style={styles.screen}>
+            <View style={styles.summaryContainer}>
+            <Text style={styles.summaryLabel}>Total population</Text>
+            <Text style={styles.summaryValue}>
+                {totalPopulation.toLocaleString()}
+            </Text>
+            </View>
+        
             <FlatList
-                data={countries}
-                renderItem={({ item }) => <CountryCard item={item} onPress={() => {
-                    navigation.navigate("CardScreen", {countryName: item.commonName.toLowerCase()})
-                }}/>}
-                keyExtractor={(item) => item.officialName}
-                initialNumToRender={12}
-                maxToRenderPerBatch={10}
-                updateCellsBatchingPeriod={50}
-                windowSize={7}
-                removeClippedSubviews
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listContent}
+            data={countries}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.officialName}
+            initialNumToRender={12}
+            maxToRenderPerBatch={10}
+            updateCellsBatchingPeriod={50}
+            windowSize={7}
+            removeClippedSubviews
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
             />
         </View>
     );
@@ -90,4 +115,27 @@ const styles = StyleSheet.create({
         color: "#6B7280",
         textAlign: "center",
     },
+    summaryContainer: {
+        marginHorizontal: 16,
+        marginTop: 16,
+        marginBottom: 8,
+        padding: 16,
+        borderRadius: 16,
+        backgroundColor: '#ffffff',
+        shadowColor: '#000',
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 3,
+      },
+      summaryLabel: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 4,
+      },
+      summaryValue: {
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#111',
+      },
 });
