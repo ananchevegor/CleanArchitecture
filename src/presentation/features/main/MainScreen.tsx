@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
     ActivityIndicator,
     FlatList,
@@ -12,6 +12,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "App";
 import { Country } from "@entities/Country";
 import NativeModule from "../../../../specs/NativeModule";
+import AuthorizationFingerprint from "../../../native/TurboModule";
 
 
 
@@ -22,8 +23,10 @@ export default function MainScreen({navigation}: Props) {
     const { countries, loading, error } = useCountries();
 
     const totalPopulation = NativeModule.summuryPopulation(countries.map(c => c.population));
-    
-    
+
+    const [authorized, setAuthorized] = React.useState<boolean | null>(null);
+
+
     
     const handlePress = useCallback((countryName: string) => {
         navigation.navigate("CardScreen", {countryName: countryName.toLowerCase()})
@@ -35,6 +38,19 @@ export default function MainScreen({navigation}: Props) {
         ),
         [handlePress]
     );
+
+    useEffect(() => {
+        AuthorizationFingerprint.authorization()
+            .then(result => {
+                if (result) {
+                    setAuthorized(true);
+                }
+            })
+            .catch(error => {
+                console.error("Authorization error:", error);
+            });
+    }, []);
+
 
     if (loading) {
         return (
@@ -50,6 +66,15 @@ export default function MainScreen({navigation}: Props) {
             <View style={styles.centeredState}>
                 <Text style={styles.errorTitle}>Unable to load countries</Text>
                 <Text style={styles.errorMessage}>{error}</Text>
+            </View>
+        );
+    }
+
+    if (!authorized) {
+        return (
+            <View style={styles.centeredState}>
+                <Text style={styles.errorTitle}>Unauthorized</Text>
+                <Text style={styles.errorMessage}>You are not authorized to view this content.</Text>
             </View>
         );
     }

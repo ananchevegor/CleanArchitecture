@@ -1,5 +1,5 @@
 #pragma once
-#include <AppSpecJSI.h>
+#include <AppSpecsJSI.h>
 #include <memory>
 #include <string>
 #include <vector>
