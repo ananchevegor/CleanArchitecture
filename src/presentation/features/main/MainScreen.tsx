@@ -20,13 +20,9 @@ import AuthorizationFingerprint from "../../../native/TurboModule";
 type Props = NativeStackScreenProps<RootStackParamList, 'MainScreen'>;
 
 export default function MainScreen({navigation}: Props) {
-    const { countries, loading, error } = useCountries();
+    const { countries, loading, error, authorized, authorizeAgain } = useCountries();
 
     const totalPopulation = NativeModule.summuryPopulation(countries.map(c => c.population));
-
-    const [authorized, setAuthorized] = React.useState<boolean | null>(null);
-
-
     
     const handlePress = useCallback((countryName: string) => {
         navigation.navigate("CardScreen", {countryName: countryName.toLowerCase()})
@@ -38,18 +34,6 @@ export default function MainScreen({navigation}: Props) {
         ),
         [handlePress]
     );
-
-    useEffect(() => {
-        AuthorizationFingerprint.authorization()
-            .then(result => {
-                if (result) {
-                    setAuthorized(true);
-                }
-            })
-            .catch(error => {
-                console.error("Authorization error:", error);
-            });
-    }, []);
 
 
     if (loading) {
@@ -75,6 +59,7 @@ export default function MainScreen({navigation}: Props) {
             <View style={styles.centeredState}>
                 <Text style={styles.errorTitle}>Unauthorized</Text>
                 <Text style={styles.errorMessage}>You are not authorized to view this content.</Text>
+                <Text style={[styles.errorMessage, { marginTop: 16, color: '#2563EB' }]} onPress={authorizeAgain}>Try Again</Text>
             </View>
         );
     }

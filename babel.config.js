@@ -11,7 +11,8 @@ module.exports = {
           '@use-cases': './src/application/use-cases',
           '@composition': './src/composition',
           '@infrastructure': './src/infrastructure',
-          '@': '.'
+          '@': '.',
+          '@presentation': './src/presentation',
         },
       },
     ],
