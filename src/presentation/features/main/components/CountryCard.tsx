@@ -1,29 +1,48 @@
 import React, { memo } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { Country } from "../../../../domain/entities/Country";
-
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Country } from "@entities/Country";
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+} from 'react-native-reanimated';
 
 type CountryCardProps = {
     item: Country,
     onPress: (countryName: string) => void
 };
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const CountryCard = React.memo(({ item, onPress}: CountryCardProps) => {
-    console.log(`Rendering card for`);
+const CountryCard = React.memo(({ item, onPress }: CountryCardProps) => {
+    const scale = useSharedValue(1);
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }));
     return (
-        <TouchableOpacity style={styles.card} onPress={() => onPress(item.commonName)}>
-            <Text style={styles.title}>{item.commonName}</Text>
-            <Text style={styles.subtitle}>{item.officialName}</Text>
+            <AnimatedPressable 
+                style={[styles.card, animatedStyle]} 
+                onPress={() => onPress(item.commonName)} 
+                onPressIn={() => {
+                    scale.value = withSpring(0.95, {
+                    damping: 15,
+                    stiffness: 1000,
+                    });
+                }}
+                onPressOut={() => {
+                    scale.value = withSpring(1);
+                }}>
+                <Text style={styles.title}>{item.commonName}</Text>
+                <Text style={styles.subtitle}>{item.officialName}</Text>
 
-            {item.nativeCommon ? (
-                <Text style={styles.meta}>Native: {item.nativeCommon}</Text>
-            ) : null}
+                {item.nativeCommon ? (
+                    <Text style={styles.meta}>Native: {item.nativeCommon}</Text>
+                ) : null}
 
-            <Text style={styles.population}>
-                Population: {item.population.toLocaleString()}
-            </Text>
-        </TouchableOpacity>
+                <Text style={styles.population}>
+                    Population: {item.population.toLocaleString()}
+                </Text>
+            </AnimatedPressable>
     );
 });
 

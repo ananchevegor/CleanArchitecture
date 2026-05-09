@@ -10,6 +10,13 @@ const mockCountry: Country = {
     nativeCommon: "Testland"
 }
 
+const mockCountryNativeCommonUndefined: Country = {
+    commonName: "testLand",
+    officialName: "Testlandia",
+    population: 123456, 
+    nativeCommon: undefined
+}
+
 describe("CountryCard", () => {
     it("renders country information correctly", () => {
 
@@ -40,4 +47,17 @@ describe("CountryCard", () => {
         expect(mockOnPress).toHaveBeenCalledTimes(1);
         expect(mockOnPress).toHaveBeenCalledWith("testLand");
     });
+
+    it("does not render native common name when it's undefined", () => {
+        const mockOnPress = jest.fn();
+
+        const { getByText, queryByText } = render(
+            <CountryCard item={mockCountryNativeCommonUndefined} onPress={mockOnPress} />
+        );
+
+        expect(getByText("testLand")).toBeTruthy();
+        expect(getByText("Testlandia")).toBeTruthy();
+        expect(queryByText("Native: ")).toBeNull();
+    });
+
 });
