@@ -6,43 +6,50 @@ import Animated, {
     useAnimatedStyle,
     withSpring,
 } from 'react-native-reanimated';
+import { useFavorite } from "../hooks/useFavorite";
 
 type CountryCardProps = {
     item: Country,
-    onPress: (countryName: string) => void
+    onPress: (countryName: string) => void,
+    isFavorite: boolean
 };
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const CountryCard = React.memo(({ item, onPress }: CountryCardProps) => {
+const CountryCard = React.memo(({ item, onPress, isFavorite }: CountryCardProps) => {
     const scale = useSharedValue(1);
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: scale.value }],
     }));
+    
     return (
-            <AnimatedPressable 
-                style={[styles.card, animatedStyle]} 
-                onPress={() => onPress(item.commonName)} 
-                onPressIn={() => {
-                    scale.value = withSpring(0.95, {
-                    damping: 15,
-                    stiffness: 1000,
-                    });
-                }}
-                onPressOut={() => {
-                    scale.value = withSpring(1);
-                }}>
-                <Text style={styles.title}>{item.commonName}</Text>
-                <Text style={styles.subtitle}>{item.officialName}</Text>
+        <AnimatedPressable 
+            style={[styles.card, animatedStyle]} 
+            onPress={() => onPress(item.commonName)} 
+            onPressIn={() => {
+                scale.value = withSpring(0.95, {
+                damping: 15,
+                stiffness: 1000,
+                });
+            }}
+            onPressOut={() => {
+                scale.value = withSpring(1);
+            }}>
 
-                {item.nativeCommon ? (
-                    <Text style={styles.meta}>Native: {item.nativeCommon}</Text>
-                ) : null}
+            <View style={styles.commonNameFavirite}>
+                <Text style={styles.title}>{item.commonName}</Text> 
+                <Text>{ isFavorite ? "❤️" : null }</Text>
+            </View>
+            <Text style={styles.subtitle}>{item.officialName}</Text>
 
-                <Text style={styles.population}>
-                    Population: {item.population.toLocaleString()}
-                </Text>
-            </AnimatedPressable>
+            {item.nativeCommon ? (
+                <Text style={styles.meta}>Native: {item.nativeCommon}</Text>
+            ) : null}
+
+            <Text style={styles.population}>
+                Population: {item.population.toLocaleString()}
+            </Text>
+        </AnimatedPressable>
     );
 });
 
@@ -79,6 +86,11 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: "#2563EB",
     },
+    commonNameFavirite:{
+        flexDirection: "row", 
+        justifyContent: "space-between",
+        alignItems: "center"
+    }
 });
 
 export default CountryCard;

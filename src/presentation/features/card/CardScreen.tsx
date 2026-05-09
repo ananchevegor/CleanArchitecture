@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
     ActivityIndicator,
+    Pressable,
     ScrollView,
     StyleSheet,
     Text,
@@ -9,6 +10,8 @@ import {
 import useCard from "./hooks/useCard";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../../App";
+import { createFavoriteDependencies } from "@composition/main/createFavoriteDependencies";
+import { useFavorite } from "./hooks/useFavorite";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CardScreen">;
 
@@ -17,6 +20,13 @@ export default function CardScreen({ route }: Props) {
     const { loading, error, country } = useCard(name);
 
     const selectedCountry = country?.[0] ?? null;
+
+    const dependencies = useMemo(() => createFavoriteDependencies(), []);
+
+    const { isFavorite, handleToggleFavorite } = useFavorite(dependencies.getFavorites, dependencies.toggleFavorite);
+
+    const isFav = selectedCountry ? isFavorite(selectedCountry.commonName) : false;
+
 
     if (loading) {
         return (
@@ -145,8 +155,23 @@ export default function CardScreen({ route }: Props) {
                     value={selectedCountry.currencySymbol || "—"}
                 />
             </View>
-        </ScrollView>
-    );
+            <Pressable 
+                onPress={() => handleToggleFavorite(selectedCountry.commonName)}
+                style={({ pressed }) => [
+                    styles.button,
+                    isFav ? styles.buttonRemove : styles.buttonAdd,
+                    pressed && styles.buttonPressed // Эффект прикосновения
+                ]}
+            >
+                <Text style={[
+                    styles.buttonText, 
+                    isFav ? styles.textRemove : styles.textAdd
+                ]}>
+                    {isFav ? '❤️ Убрать из избранного' : '🤍 В избранное'}
+                </Text>
+            </Pressable>
+                    </ScrollView>
+                );
 }
 
 type InfoRowProps = {
@@ -256,5 +281,40 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#111827",
         fontWeight: "500",
+    },
+    button: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 14,
+        paddingHorizontal: 24,
+        borderRadius: 12, 
+        marginTop: 16,
+        borderWidth: 1,
+    },
+    buttonAdd: {
+        backgroundColor: '#007AFF', 
+        borderColor: '#007AFF',
+    },
+    buttonRemove: {
+        backgroundColor: '#F2F2F7', 
+        borderColor: '#FF3B30',     
+    },
+    buttonPressed: {
+        opacity: 0.7,
+        transform: [{ scale: 0.98 }], 
+    },
+    buttonText: {
+        fontSize: 16,
+        fontWeight: '600', 
+        marginLeft: 8,     
+    },
+
+    textAdd: {
+        color: '#FFFFFF',
+    },
+
+    textRemove: {
+        color: '#FF3B30',
     },
 });

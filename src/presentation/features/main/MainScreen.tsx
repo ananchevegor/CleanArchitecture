@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
     ActivityIndicator,
     FlatList,
@@ -13,6 +13,8 @@ import { RootStackParamList } from "App";
 import { Country } from "@entities/Country";
 import NativeModule from "../../../../specs/NativeModule";
 import AuthorizationFingerprint from "../../../native/TurboModule";
+import { useFavorite } from "./hooks/useFavorite";
+import { createFavoriteDependencies } from "@composition/main/createFavoriteDependencies";
 
 
 
@@ -22,6 +24,10 @@ type Props = NativeStackScreenProps<RootStackParamList, 'MainScreen'>;
 export default function MainScreen({navigation}: Props) {
     const { countries, loading, error, authorized, authorizeAgain } = useCountries();
 
+    const dependencies = useMemo(() => createFavoriteDependencies(), []);
+
+    const  { isFavorite } = useFavorite(dependencies.getFavorites, dependencies.toggleFavorite);
+
     const totalPopulation = NativeModule.summuryPopulation(countries.map(c => c.population));
     
     const handlePress = useCallback((countryName: string) => {
@@ -30,9 +36,9 @@ export default function MainScreen({navigation}: Props) {
 
     const renderItem = useCallback(
         ({ item }: { item: Country }) => (
-            <CountryCard item={item} onPress={handlePress} />
+            <CountryCard item={item} onPress={handlePress} isFavorite={isFavorite(item.commonName)} />
         ),
-        [handlePress]
+        [handlePress, isFavorite]
     );
 
 

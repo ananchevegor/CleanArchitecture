@@ -6,6 +6,7 @@ import { Country } from "@entities/Country";
 export async function loadCountries(): Promise<Country[]> {
     const { getCountryUseCase } = createMainDependencies();
 
+
     return getCountryUseCase.execute();
 }
 
