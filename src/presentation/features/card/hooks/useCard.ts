@@ -13,6 +13,7 @@ export default function useCard(c: string): CountryCard {
     const [loading, setLoading] = React.useState<boolean>(false);
     const [error, setError] = React.useState<string | null>(null);
     const [country, setCountry] = React.useState<CountrySelected[] | null>(null);
+    
 
     useEffect(() => {
         let isMounted = true;
