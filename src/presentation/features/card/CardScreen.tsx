@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useLayoutEffect, useMemo } from "react";
 import {
     ActivityIndicator,
     Pressable,
@@ -12,10 +12,11 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../../App";
 import { createFavoriteDependencies } from "@composition/main/createFavoriteDependencies";
 import { useFavorite } from "./hooks/useFavorite";
+import Animated, { FadeIn, FadeOut, FadeInUp, FadeInDown, FadeInRight, FadeInLeft } from "react-native-reanimated";
 
 type Props = NativeStackScreenProps<RootStackParamList, "CardScreen">;
 
-export default function CardScreen({ route }: Props) {
+export default function CardScreen({ route, navigation }: Props) {
     const name: string = route.params.countryName;
     const { loading, error, country } = useCard(name);
 
@@ -26,6 +27,12 @@ export default function CardScreen({ route }: Props) {
     const { isFavorite, handleToggleFavorite } = useFavorite(dependencies.getFavorites, dependencies.toggleFavorite);
 
     const isFav = selectedCountry ? isFavorite(selectedCountry.commonName) : false;
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitleAlign: "center",
+        });
+    }, [navigation]);
 
 
     if (loading) {
@@ -63,15 +70,15 @@ export default function CardScreen({ route }: Props) {
             contentContainerStyle={styles.content}
             showsVerticalScrollIndicator={false}
         >
-            <View style={styles.heroCard}>
+            <Animated.View style={styles.heroCard} entering={FadeInUp.duration(400)}>
                 <Text style={styles.flag}>{selectedCountry.flagEmoji || "🏳️"}</Text>
                 <Text style={styles.title}>{selectedCountry.commonName || "—"}</Text>
                 <Text style={styles.subtitle}>
                     {selectedCountry.officialName || "—"}
                 </Text>
-            </View>
+            </Animated.View>
 
-            <View style={styles.section}>
+            <Animated.View style={styles.section} entering={FadeInRight.duration(300)}>
                 <Text style={styles.sectionTitle}>General</Text>
 
                 <InfoRow label="CCA2" value={selectedCountry.cca2 || "—"} />
@@ -100,9 +107,9 @@ export default function CardScreen({ route }: Props) {
                             : "—"
                     }
                 />
-            </View>
+            </Animated.View>
 
-            <View style={styles.section}>
+            <Animated.View style={styles.section} entering={FadeInLeft.duration(300)}>
                 <Text style={styles.sectionTitle}>Location</Text>
 
                 <InfoRow
@@ -129,9 +136,9 @@ export default function CardScreen({ route }: Props) {
                             : "—"
                     }
                 />
-            </View>
+            </Animated.View>
 
-            <View style={styles.section}>
+            <Animated.View style={styles.section} entering={FadeInRight.duration(300)}>
                 <Text style={styles.sectionTitle}>Culture</Text>
 
                 <InfoRow
@@ -154,8 +161,8 @@ export default function CardScreen({ route }: Props) {
                     label="Symbol"
                     value={selectedCountry.currencySymbol || "—"}
                 />
-            </View>
-            <Pressable 
+            </Animated.View>
+            <Pressable
                 onPress={() => handleToggleFavorite(selectedCountry.commonName)}
                 style={({ pressed }) => [
                     styles.button,
@@ -164,14 +171,14 @@ export default function CardScreen({ route }: Props) {
                 ]}
             >
                 <Text style={[
-                    styles.buttonText, 
+                    styles.buttonText,
                     isFav ? styles.textRemove : styles.textAdd
                 ]}>
                     {isFav ? '❤️ Убрать из избранного' : '🤍 В избранное'}
                 </Text>
             </Pressable>
-                    </ScrollView>
-                );
+        </ScrollView>
+    );
 }
 
 type InfoRowProps = {
@@ -288,26 +295,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 14,
         paddingHorizontal: 24,
-        borderRadius: 12, 
+        borderRadius: 12,
         marginTop: 16,
         borderWidth: 1,
     },
     buttonAdd: {
-        backgroundColor: '#007AFF', 
+        backgroundColor: '#007AFF',
         borderColor: '#007AFF',
     },
     buttonRemove: {
-        backgroundColor: '#F2F2F7', 
-        borderColor: '#FF3B30',     
+        backgroundColor: '#F2F2F7',
+        borderColor: '#FF3B30',
     },
     buttonPressed: {
         opacity: 0.7,
-        transform: [{ scale: 0.98 }], 
+        transform: [{ scale: 0.98 }],
     },
     buttonText: {
         fontSize: 16,
-        fontWeight: '600', 
-        marginLeft: 8,     
+        fontWeight: '600',
+        marginLeft: 8,
     },
 
     textAdd: {
