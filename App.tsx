@@ -30,8 +30,18 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName='MainScreen'>
-        <Stack.Screen name="MainScreen" component={MainScreen} />
-        <Stack.Screen name="CardScreen" component={CardScreen} />
+        <Stack.Screen name="MainScreen" component={MainScreen} 
+          options={{ 
+            animation: "fade",
+            headerBlurEffect: "systemChromeMaterialDark",
+            headerTransparent: true,
+            headerSearchBarOptions: {
+              placeholder: "Search countries",
+              hideWhenScrolling: true,
+            },
+          }} 
+        />
+        <Stack.Screen name="CardScreen" component={CardScreen} options={{ animation: "fade" }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

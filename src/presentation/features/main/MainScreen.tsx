@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo } from "react";
 import {
     ActivityIndicator,
     FlatList,
+    Pressable,
     StyleSheet,
     Text,
     View,
@@ -15,6 +16,9 @@ import NativeModule from "../../../../specs/NativeModule";
 import AuthorizationFingerprint from "../../../native/TurboModule";
 import { useFavorite } from "./hooks/useFavorite";
 import { createFavoriteDependencies } from "@composition/main/createFavoriteDependencies";
+import Animated, { SharedTransition, useAnimatedRef, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { AnimatedFlashList, FlashList, FlashListRef } from "@shopify/flash-list";
 
 
 
@@ -22,7 +26,7 @@ import { createFavoriteDependencies } from "@composition/main/createFavoriteDepe
 type Props = NativeStackScreenProps<RootStackParamList, 'MainScreen'>;
 
 export default function MainScreen({navigation}: Props) {
-    const { countries, loading, error, authorized, authorizeAgain } = useCountries();
+    const { countries, loading, error, authorized, authorizeAgain, filteredCountries, searchOfCountries } = useCountries();
 
     const dependencies = useMemo(() => createFavoriteDependencies(), []);
 
@@ -34,13 +38,31 @@ export default function MainScreen({navigation}: Props) {
         navigation.navigate("CardScreen", {countryName: countryName.toLowerCase()})
     }, [navigation]);
 
+    const transition = SharedTransition.duration(550).springify();
+
     const renderItem = useCallback(
         ({ item }: { item: Country }) => (
-            <CountryCard item={item} onPress={handlePress} isFavorite={isFavorite(item.commonName)} />
+            <Animated.View sharedTransitionTag="hero" sharedTransitionStyle={transition}>
+                <CountryCard item={item} onPress={handlePress} isFavorite={isFavorite(item.commonName)} />
+            </Animated.View>
         ),
         [handlePress, isFavorite]
     );
 
+    const insets = useSafeAreaInsets();
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitleAlign: "center",
+            headerSearchBarOptions: {
+                placeholder: "Search countries",
+                hideWhenScrolling: true,
+                onChangeText: (event) => {
+                    searchOfCountries(event.nativeEvent.text);
+                }
+            },
+        });
+    }, [navigation]);
 
     if (loading) {
         return (
@@ -73,7 +95,7 @@ export default function MainScreen({navigation}: Props) {
     
 
     return (
-        <View style={styles.screen}>
+        <SafeAreaView style={[styles.screen, { paddingTop: insets.top }]}>
             <View style={styles.summaryContainer}>
             <Text style={styles.summaryLabel}>Total population</Text>
             <Text style={styles.summaryValue}>
@@ -81,19 +103,18 @@ export default function MainScreen({navigation}: Props) {
             </Text>
             </View>
         
-            <FlatList
-            data={countries}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.officialName}
-            initialNumToRender={12}
-            maxToRenderPerBatch={10}
-            updateCellsBatchingPeriod={50}
-            windowSize={7}
-            removeClippedSubviews
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContent}
+            <AnimatedFlashList
+                data={filteredCountries.length === 0 ? countries : filteredCountries}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.officialName}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.listContent}
+                keyboardDismissMode="on-drag"
+                automaticallyAdjustKeyboardInsets={true}
+                scrollEventThrottle={16}
+                contentInsetAdjustmentBehavior="automatic"
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -106,6 +127,15 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
         paddingBottom: 24,
+    },
+    button: {
+        position: "absolute",
+        bottom: 24,
+        right: 16,
+    },
+    buttonText: {
+        backgroundColor: "#2563EB",
+        color: "#fff",
     },
     centeredState: {
         flex: 1,

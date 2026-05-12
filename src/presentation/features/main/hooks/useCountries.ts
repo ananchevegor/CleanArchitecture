@@ -9,6 +9,8 @@ type UseCountriesResult = {
     error: string | null;
     authorized: boolean | null;
     authorizeAgain?: () => void;
+    filteredCountries: Country[];
+    searchOfCountries: (text: string) => void;
 };
 
 export function useCountries(): UseCountriesResult {
@@ -16,6 +18,7 @@ export function useCountries(): UseCountriesResult {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [authorized, setAuthorized] = useState<boolean | null>(null);
+    const [filteredCountries, setFilteredCountries] = useState<Country[]>([]);
 
     useEffect(() => {
         let isMounted = true;
@@ -78,5 +81,21 @@ export function useCountries(): UseCountriesResult {
         });
     }
 
-    return { countries, loading, error, authorized, authorizeAgain };
+
+    const searchOfCountries = (text: string) => {
+        if (!text.trim()) {
+            setFilteredCountries(countries);
+            return;
+        }
+
+        const query = text.toLowerCase();
+
+        const result = countries.filter((country) => 
+            country.commonName.toLowerCase().includes(query)
+        );
+
+        setFilteredCountries(result);
+    };
+
+    return { countries, loading, error, authorized, authorizeAgain, filteredCountries, searchOfCountries };
 }
